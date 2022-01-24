@@ -1,0 +1,45 @@
+docker run -v $PWD/confluent-hub-components:/share/confluent-hub-components confluentinc/ksqldb-server:0.8.0 confluent-hub install confluentinc/kafka-connect-datagen:0.4.0
+
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1 main.py
+
+spark-submit \
+  --packages org.apache.spark:spark-sql-kafka-0-10_2.12:2.4.1 \
+  main.py
+
+spark-sql-kafka-0-10_2.12:3.1.0
+spark-sql-kafka-0-10_2.11:2.0.2
+spark-sql-kafka-0-10_2.12:2.4.1
+spark-sql-kafka-0-10_2.12:3.0.1
+
+
+textFile = sc.textFile("hdfs://localhost:9000/user/input.txt")
+var data = spark.read.format("avro").load("hdfs://localhost:9000/expedia/*")
+data.show()
+
+
+spark-submit   --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.0.1,org.apache.spark:spark-avro_2.12:3.0.1 main.py
+Schemas:
+hotels_data
+Id", "Name", "Country", "City", "Address", "Latitude", Longitude
+weather_data
+lng", "lat", "avg_tmpr_f", "avg_tmpr_c", "wthr_date"
+expedia_data
+id, date_time, site_name, posa_continent, user_location_country, user_location_region, user_location_city, orig_destination_distance, user_id, is_mobile, is_package, channel, srch_ci, srch_co, srch_adults_cnt
+
+kafka-topics --describe  --zookeeper localhost:2181 --topic test
+
+bin/kafka-topics.sh --create --topic hotels_data_topic --bootstrap-server localhost:9098
+bin/kafka-topics.sh --create --topic weather_data_topic --bootstrap-server localhost:9098
+
+bin/kafka-console-producer.sh --broker-list localhost:9098 --topic hotels_data_topic < hotels.csv
+bin/kafka-console-producer.sh --broker-list localhost:9098 --topic weather_data_topic < weather_data.csv
+
+bin/kafka-console-consumer.sh --zookeeper localhost:2181 --bootstrap-server localhost:9092 --topic test --from-beginning
+
+
+
+spark-submit --packages org.elasticsearch:elasticsearch-hadoop:7.8.0 main.py
+
+
+
+

@@ -1,0 +1,24 @@
+CREATE EXTERNAL TABLE weather (lng double, lat double, avg_tmpr_f double, avg_tmpr_c double, wthr_date string) 
+PARTITIONED BY (year int, month int, day int) STORED AS PARQUET 
+LOCATION '/weather';
+
+MSCK REPAIR TABLE weather;
+
+alter table weather change wthr_date wthr_date date;
+
+select date_format(wthr_date,'MM') as month, max(avg_tmpr_f) - min(avg_tmpr_f) from weather group by date_format(wthr_date,'MM');
+
+OR
+select  date_format(wth.wthr_date, 'MM'), max(avg_tmpr_f) - min(avg_tmpr_f) from (select * from weather where avg_tmpr_f is not Null limit 1000) as wth group by date_format(wth.wthr_date, 'MM');
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic hotels_topic
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic weather_topic
+
+
+hive  -e "select * from weather" > $PWD/weather_data.csv
+
+
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic weather_topic < weather_data
+
+bin/kafka-console-consumer.sh --topic hotels_topic --from-beginning --bootstrap-server localhost:9092

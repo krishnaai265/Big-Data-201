@@ -1,0 +1,10 @@
+CREATE EXTERNAL TABLE weather (lng double, lat double, avg_tmpr_f double, avg_tmpr_c double, wthr_date string) 
+PARTITIONED BY (year int, month int, day int) STORED AS PARQUET 
+LOCATION '/weather';
+
+MSCK REPAIR TABLE weather;
+
+alter table weather change wthr_date wthr_date date;
+
+
+create external table expedia (id bigint, date_time string, site_name int, posa_continent int, user_location_country int, user_location_region int, user_location_city int, orig_destination_distance double, user_id int, is_mobile int, is_package int, channel int, srch_ci string, srch_co string, srch_adults_cnt int) stored as avro location '/expedia';

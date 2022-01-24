@@ -1,0 +1,13 @@
+docker run -v $PWD/confluent-hub-components:/usr/share/java/confluent-security/ confluentinc/ksqldb-server:0.8.0 confluent-hub install --no-prompt confluentinc/kafka-connect-datagen:0.4.0
+docker run -v $PWD/confluent-hub-components:/usr/share/java/confluent-security/ confluentinc/ksqldb-server:0.8.0 confluent-hub install --no-prompt confluentinc/kafka-connect-elasticsearch:10.0.2
+
+
+docker run -v $PWD/confluent-hub-components:/share/confluent-hub-components confluentinc/ksqldb-server:0.8.0 confluent-hub install --no-prompt confluentinc/kafka-connect-datagen:0.4.0
+
+
+
+for f in lib/*; do docker cp $f a3c1ef581929:/usr/share/java/confluent-security/connect; done
+
+docker cp $PWD/confluent-hub-components/confluentinc-kafka-connect-datagen-0.4.0/lib/ confluentinc/ksqldb-server:0.8.0:/usr/share/java/confluent-security/connect
+
+docker cp lib/ confluentinc/cp-ksqldb-server:6.1.0:/usr/share/java/confluent-security/connect

@@ -1,0 +1,102 @@
+create keyspace killrvideo with replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+describe keyspaces;
+
+use killrvideo;
+
+create table videos(
+video_id timeuuid primary key,
+added_date timestamp,
+description text,
+title text,
+user_id uuid);
+
+select * from videos;
+
+COPY videos FROM 'videos.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+
+select * from videos limit 10;
+
+select count(*) from videos;
+
+select * from videos where video_id = 6c4cffb9-0dc4-1d59-af24-c960b5fc3652;
+
+truncate videos;
+
+select * from videos;
+
+create table videos_by_title_year(
+title text,
+added_year int,
+added_date timestamp,
+description text,
+user_id uuid,
+video_id timeuuid,
+primary key ((title, added_year))
+);
+
+COPY videos_by_title_year FROM 'videos_by_title_year.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+
+select title, added_year from videos_by_title_year where 
+title = 'Big Data Challenges' and
+added_year = 2013;
+
+select title, added_year from videos_by_title_year where 
+title = 'Big Data Challenges';
+
+# Above query will failed as In cassandra, partition key spreads data around cluster. It computes the hash of partition key and determine the location of data in the cluster.
+
+# One exception is, if you use ALLOW FILTERING or secondary index it does not require you too include all partition keys in where query.
+
+create table videos_by_tag_year(
+tag text,
+added_year int,
+video_id timeuuid,
+added_date timestamp,
+description text,
+title text,
+user_id uuid,
+primary key (tag, added_year, video_id)) 
+with clustering order by (added_year desc);
+
+COPY videos_by_tag_year(tag, added_year, video_id, added_date, description, title, user_id) 
+FROM 'videos_by_tag_year.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+
+select count(*) from videos_by_tag_year;
+
+select count(*) from videos_by_tag_year where tag = 'trailer' and added_year = 2015 allow filtering;
+select count(*) from videos_by_tag_year where tag = 'cql' and added_year = 2014 allow filtering;
+select count(*) from videos_by_tag_year where tag = 'spark' and added_year = 2014 allow filtering;
+
+select count(*) from videos_by_tag_year where tag = 'cql' and added_year < 2015 allow filtering;
+
+select count(*) from videos_by_tag_year where added_year < 2015;
+# Above query will failed as In cassandra, partition key spreads data around cluster. It computes the hash of partition key and determine the location of data in the cluster.
+
+# One exception is, if you use ALLOW FILTERING or secondary index it does not require you too include all partition keys in where query.
+
+truncate table videos;
+select * from videos;
+
+ALTER TABLE videos
+ADD tags text; 
+
+COPY videos FROM 'videos.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+
+create table video_encoding (
+bit_rates set<text>,
+encoding text,
+height int,
+width int
+);
+
+ALTER table videos ADD encoding video_encoding;
+
+
+
+COPY videos(video_id, encoding) FROM 'videos_encoding.csv' WITH DELIMITER=',' AND HEADER=TRUE;
+select count(*) from videos;
+
+select * from videos limit 10;
+
+exit

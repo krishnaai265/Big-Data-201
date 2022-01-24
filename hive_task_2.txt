@@ -1,0 +1,6 @@
+create external table expedia (id bigint, date_time string, site_name int, posa_continent int, user_location_country int, user_location_region int, user_location_city int, orig_destination_distance double, user_id int, is_mobile int, is_package int, channel int, srch_ci string, srch_co string, srch_adults_cnt int) stored as avro location '/expedia';
+
+select exp.site_name, count(*) as cnt from (select * from expedia where site_name is not Null) as exp group by exp.site_name, date_format(exp.srch_ci, 'MM') ORDER BY cnt DESC LIMIT 10;
+
+
+select exp.id, count(*) as cnt from expedia as exp group by exp.id;

@@ -1,0 +1,11 @@
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic hotels_topic
+
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic weather_topic
+
+
+hive  -e "select * from weather" > $PWD/weather_data.csv
+
+
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic weather_topic < weather_data
+
+bin/kafka-console-consumer.sh --topic hotels_topic --from-beginning --bootstrap-server localhost:9092

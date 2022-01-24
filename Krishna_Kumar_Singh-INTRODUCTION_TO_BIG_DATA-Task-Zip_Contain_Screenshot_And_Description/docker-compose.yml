@@ -1,0 +1,8 @@
+version: '3'
+services:
+
+  ambari-servers:
+    image: "ambari.hadoop:latest"
+    hostname: "ambari"
+    ports:
+      - "127.0.0.1:8080:8080"
